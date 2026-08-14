@@ -38,7 +38,10 @@ export function SiteShell({ brand, children }: SiteShellProps) {
 
   return (
     <div style={style} className="flex min-h-svh flex-col bg-background text-foreground">
-      <header className="sticky top-0 z-40 bg-background/92 backdrop-blur-sm">
+      <header
+        data-site-header
+        className="sticky top-0 z-40 bg-background/92 pt-[env(safe-area-inset-top)] backdrop-blur-sm"
+      >
         <div className="mx-auto flex max-w-5xl items-end gap-3.5 px-5 py-4 sm:px-8">
           {/* A ruled initial, set in the display serif — an institution's
               mark, not another rounded square with a glyph inside it. */}

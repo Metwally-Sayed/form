@@ -136,7 +136,25 @@
     }
   html {
     @apply font-sans;
+    /* iOS paints a grey box over tapped links; the ledger rows are full
+       width, so that box covers the whole row. :active styles replace it. */
+    -webkit-tap-highlight-color: transparent;
     }
+
+  /* viewport-fit=cover lets us paint edge to edge; these give the content
+     back the space the notch, rounded corners and home indicator take. */
+  body {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* svh landed in iOS 15.4; older Safari drops the declaration entirely. */
+  @supports not (height: 100svh) {
+    .min-h-svh {
+      min-height: 100vh;
+    }
+  }
   ::selection {
     background: color-mix(in oklch, var(--brass) 32%, transparent);
   }
@@ -156,6 +174,53 @@
   .dark body::before {
     opacity: 0.09;
     mix-blend-mode: soft-light;
+  }
+}
+
+/* Touch devices — iOS Safari in particular.
+   Deliberately unlayered: Tailwind's `utilities` layer outranks `components`,
+   so a layered rule here loses to `text-sm` on the select and combobox
+   triggers and Safari would still zoom on focus. */
+@media (hover: none) and (pointer: coarse) {
+  /* A fixed layer with mix-blend-mode forces Safari to composite the whole
+     page as one layer: momentum scrolling judders and the sticky header
+     tears. The grain is decoration; drop it rather than pay that. */
+  body::before {
+    display: none;
+  }
+
+  /* Safari zooms the viewport when a focused control is under 16px, which
+     leaves the page scrolled sideways and the header half off-screen. */
+  [data-slot="input"],
+  [data-slot="textarea"],
+  [data-slot="select-trigger"],
+  [data-slot="combobox-trigger"],
+  [data-slot="combobox-chip-input"] {
+    font-size: 1rem;
+  }
+
+  /* 44pt is Apple's minimum hit target; the desktop controls are 32px. */
+  [data-slot="input"],
+  [data-slot="select-trigger"],
+  [data-slot="combobox-trigger"],
+  [data-slot="combobox-item"],
+  [data-slot="select-item"],
+  [data-slot="button"] {
+    min-height: 2.75rem;
+  }
+
+  /* Square slots (icon buttons) must grow in both axes or they distort. */
+  [data-slot="button"][class*="size-8"],
+  [data-slot="button"][class*="size-9"] {
+    min-width: 2.75rem;
+  }
+
+  /* backdrop-filter repaints every frame of a momentum scroll on iOS and
+     visibly strobes; the header is opaque on touch instead. */
+  [data-site-header] {
+    background-color: var(--background);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }
 

@@ -25,7 +25,7 @@ export function FormCard({ form, index }: { form: FormListItem; index: number })
   return (
     <Link
       href={`/forms/${form.id}`}
-      className="group relative grid grid-cols-[2.5rem_1fr] items-baseline gap-x-4 gap-y-3 border-b border-border py-7 transition-colors hover:bg-accent/45 sm:grid-cols-[3.5rem_1fr_9rem] sm:gap-x-6"
+      className="group relative grid grid-cols-[2.5rem_1fr] items-baseline gap-x-4 gap-y-3 border-b border-border py-7 transition-colors hover:bg-accent/45 active:bg-accent/60 sm:grid-cols-[3.5rem_1fr_9rem] sm:gap-x-6"
     >
       <span className="label-meta pt-1 text-brass tabular-nums">
         {String(index + 1).padStart(2, "0")}
