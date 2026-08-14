@@ -12,12 +12,12 @@ export default async function Page() {
   let forms = null
 
   try {
-    forms = await getForms()
+    forms = (await getForms()).filter(
+      (form) => !form.requiresPayment && form.stripeMode === "none"
+    )
   } catch {
     forms = null
   }
-
-  const masjidName = brand.branding?.name ?? brand.masjid?.name ?? "your masjid"
 
   return (
     <SiteShell brand={brand}>
@@ -42,10 +42,6 @@ export default async function Page() {
             <span className="text-primary italic">in one open ledger.</span>
           </h1>
 
-          <p className="rise mt-9 max-w-xl border-t border-foreground/15 pt-7 text-[1.0625rem] leading-relaxed text-pretty text-muted-foreground">
-            Choose an entry below to send information securely to {masjidName}. Nothing is
-            transmitted until you submit.
-          </p>
         </div>
       </section>
 

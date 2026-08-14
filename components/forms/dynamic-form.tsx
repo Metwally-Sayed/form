@@ -127,6 +127,7 @@ function SubmitterInput({
 
 export function DynamicForm({ formDefinition }: { formDefinition: FormDefinition }) {
   const router = useRouter()
+  const submissionErrorRef = React.useRef<HTMLDivElement>(null)
   const schema = React.useMemo(() => buildPortalFormSchema(formDefinition), [formDefinition])
   const defaultValues = React.useMemo(() => getDefaultValues(formDefinition), [formDefinition])
   const form = useForm<PortalFormValues>({
@@ -157,6 +158,16 @@ export function DynamicForm({ formDefinition }: { formDefinition: FormDefinition
     }, 1_000)
     return () => window.clearInterval(interval)
   }, [retryUntil])
+
+  React.useEffect(() => {
+    if (!submissionError) return
+
+    const alert = submissionErrorRef.current
+    if (typeof alert?.scrollIntoView === "function") {
+      alert.scrollIntoView({ behavior: "smooth", block: "start" })
+    }
+    alert?.focus({ preventScroll: true })
+  }, [submissionError])
 
   const retrySeconds = retryUntil ? Math.max(0, Math.ceil((retryUntil - now) / 1_000)) : 0
 
@@ -260,7 +271,7 @@ export function DynamicForm({ formDefinition }: { formDefinition: FormDefinition
         )}
 
         {submissionError && (
-          <Alert variant="destructive">
+          <Alert ref={submissionErrorRef} tabIndex={-1} variant="destructive">
             <AlertCircle aria-hidden="true" />
             <AlertTitle>We couldn&apos;t confirm your submission</AlertTitle>
             <AlertDescription className="space-y-3">

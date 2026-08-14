@@ -177,4 +177,39 @@ describe("DynamicForm effect stability", () => {
     expect(screen.getByRole("button", { name: "Submit form" })).toBeTruthy()
     expect(vi.getTimerCount()).toBe(0)
   })
+
+  it("scrolls to and focuses a submission error rendered above the form", async () => {
+    const scrollIntoView = vi.fn()
+    Object.defineProperty(Element.prototype, "scrollIntoView", {
+      configurable: true,
+      value: scrollIntoView,
+    })
+    axiosMock.post.mockRejectedValueOnce({
+      isAxiosError: true,
+      response: {
+        status: 400,
+        data: {
+          code: "INVALID_ANSWERS",
+          message: "This form has an invalid form configuration. Please contact the masjid.",
+        },
+      },
+    })
+
+    render(<DynamicForm formDefinition={rateLimitFormDefinition} />)
+    fireEvent.change(screen.getByLabelText(/Name/), {
+      target: { value: "Aisha" },
+    })
+    fireEvent.change(screen.getByLabelText(/Email address/), {
+      target: { value: "aisha@example.com" },
+    })
+    fireEvent.click(screen.getByRole("button", { name: "Submit form" }))
+
+    const alert = await screen.findByRole("alert")
+    expect(alert.textContent).toContain("invalid form configuration")
+    await waitFor(() => expect(scrollIntoView).toHaveBeenCalledWith({
+      behavior: "smooth",
+      block: "start",
+    }))
+    expect(document.activeElement).toBe(alert)
+  })
 })

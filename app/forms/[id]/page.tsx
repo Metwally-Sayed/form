@@ -8,7 +8,6 @@ import { DynamicForm } from "@/components/forms/dynamic-form"
 import { SiteShell } from "@/components/portal/site-shell"
 import { PortalError } from "@/components/portal/state-panel"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Button } from "@/components/ui/button"
 import { getForm, getPortalBrandData } from "@/lib/masjid-fikra/client"
 import { MasjidFikraError } from "@/lib/masjid-fikra/errors"
 
@@ -42,8 +41,10 @@ export default async function FormPage({
     )
   }
 
-  const brand = await brandPromise
   const paid = formDefinition.requiresPayment || formDefinition.stripeMode !== "none"
+  if (paid) notFound()
+
+  const brand = await brandPromise
   const signedInOnly = formDefinition.submissionAuth === "signed_in"
 
   return (
@@ -74,7 +75,7 @@ export default async function FormPage({
             </div>
             <div>
               <dt className="label-meta text-muted-foreground">Submission</dt>
-              <dd className="mt-1 font-heading">{paid ? "In person" : "Online"}</dd>
+              <dd className="mt-1 font-heading">Online</dd>
             </div>
           </dl>
         </div>
@@ -82,23 +83,7 @@ export default async function FormPage({
       </section>
 
       <div className="mx-auto max-w-3xl px-5 py-10 sm:px-8">
-        {paid ? (
-          <div className="border-b border-border py-14">
-            <p className="label-meta text-brass">Not available here</p>
-            <h2 className="mt-4 font-heading text-3xl leading-tight">
-              This form is settled{" "}
-              <span className="text-primary italic">at the masjid office.</span>
-            </h2>
-            <p className="mt-3 max-w-md text-sm leading-relaxed text-muted-foreground">
-              It includes a payment step, which cannot be completed through the public forms API.
-              Please contact the masjid for the correct application link.
-            </p>
-            <Button className="mt-7" variant="outline" nativeButton={false} render={<Link href="/" />}>
-              <ArrowLeft data-icon="inline-start" aria-hidden="true" />
-              Back to the register
-            </Button>
-          </div>
-        ) : signedInOnly ? (
+        {signedInOnly ? (
           <Alert>
             <LockKeyhole aria-hidden="true" />
             <AlertTitle className="font-heading text-base">Sign-in is required</AlertTitle>

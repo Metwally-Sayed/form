@@ -91,6 +91,18 @@ function readMessage(value: unknown): string | undefined {
   return undefined
 }
 
+function hasDetailCode(details: unknown, expectedCode: string): boolean {
+  if (Array.isArray(details)) {
+    return details.some((detail) => hasDetailCode(detail, expectedCode))
+  }
+
+  if (!details || typeof details !== "object") return false
+
+  const detail = details as { code?: unknown; errors?: unknown }
+  if (detail.code === expectedCode) return true
+  return hasDetailCode(detail.errors, expectedCode)
+}
+
 export function extractFieldErrors(
   details: unknown,
   allowedKeys: ReadonlySet<string>
@@ -143,11 +155,19 @@ export function toPublicSubmissionError(
 ): { status: number; body: PublicSubmissionError } {
   let message = error.message || "The submission was rejected. Review your answers and try again."
   const fieldErrors = extractFieldErrors(error.details, allowedKeys)
+  const hasInvalidAnswerSchema =
+    error.code === "ANSWER_SCHEMA_INVALID" ||
+    hasDetailCode(error.details, "ANSWER_SCHEMA_INVALID")
 
   if (error.status === 400 || error.status === 422) {
-    message = fieldErrors
-      ? "Review the highlighted fields and try again."
-      : "The submission was rejected. Review your answers and try again."
+    if (hasInvalidAnswerSchema) {
+      message =
+        "This form has an invalid form configuration and cannot accept submissions right now. Please contact the masjid."
+    } else {
+      message = fieldErrors
+        ? "Review the highlighted fields and try again."
+        : "The submission was rejected. Review your answers and try again."
+    }
   } else if (error.status === 401 || error.status === 403) {
     message = "This form is not configured for submissions right now. Please contact the masjid."
   } else if (error.status === 404) {

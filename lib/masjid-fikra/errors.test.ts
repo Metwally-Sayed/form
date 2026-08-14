@@ -72,4 +72,26 @@ describe("backend error normalization", () => {
     expect(stale.body.message).toContain("draft is safe")
     expect(timeout.body.message).toContain("draft is still saved")
   })
+
+  it("identifies a malformed published form instead of blaming the answers", () => {
+    const result = toPublicSubmissionError(
+      new MasjidFikraError(
+        "Answers failed validation.",
+        400,
+        "INVALID_ANSWERS",
+        [
+          {
+            code: "ANSWER_SCHEMA_INVALID",
+            message: "Form schema is malformed.",
+            path: [],
+          },
+        ]
+      ),
+      new Set(["renter_name"])
+    )
+
+    expect(result.body.message).toContain("form configuration")
+    expect(result.body.message).toContain("contact the masjid")
+    expect(result.body.message).not.toContain("Review your answers")
+  })
 })
