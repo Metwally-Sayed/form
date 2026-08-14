@@ -108,9 +108,8 @@ export function SiteShell({ brand, children }: SiteShellProps) {
             </div>
           </div>
 
-          <p className="border-t border-border py-6 text-xs leading-relaxed text-muted-foreground">
-            Your saved draft stays only in this browser and is removed after a successful
-            submission.
+          <p className="label-meta border-t border-border py-6 text-muted-foreground">
+            {name}
           </p>
         </div>
       </footer>

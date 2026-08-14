@@ -96,7 +96,7 @@ export async function POST(
       return errorResponse(
         409,
         "VERSION_STALE",
-        "This form changed while you were completing it. Your draft is safe; reload the latest version."
+        "This form changed while you were completing it. Reload the latest version."
       )
     }
 

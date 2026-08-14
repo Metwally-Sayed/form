@@ -65,7 +65,7 @@ export default async function FormPage({
             {formDefinition.name}
           </h1>
 
-          <dl className="rise mt-8 grid grid-cols-2 gap-x-8 gap-y-3 border-t border-foreground/15 pt-5 sm:grid-cols-3">
+          <dl className="rise mt-8 grid grid-cols-2 gap-x-8 gap-y-3 border-t border-foreground/15 pt-5">
             <div>
               <dt className="label-meta text-muted-foreground">Version</dt>
               <dd className="mt-1 font-heading tabular-nums">
@@ -75,10 +75,6 @@ export default async function FormPage({
             <div>
               <dt className="label-meta text-muted-foreground">Submission</dt>
               <dd className="mt-1 font-heading">{paid ? "In person" : "Online"}</dd>
-            </div>
-            <div className="col-span-2 sm:col-span-1">
-              <dt className="label-meta text-muted-foreground">Drafts</dt>
-              <dd className="mt-1 font-heading">Saved on this device</dd>
             </div>
           </dl>
         </div>

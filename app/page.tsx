@@ -42,23 +42,10 @@ export default async function Page() {
             <span className="text-primary italic">in one open ledger.</span>
           </h1>
 
-          <div className="rise mt-9 grid gap-x-12 gap-y-6 border-t border-foreground/15 pt-7 sm:grid-cols-[1.6fr_1fr]">
-            <p className="max-w-xl text-[1.0625rem] leading-relaxed text-pretty text-muted-foreground">
-              Choose an entry below to send information securely to {masjidName}. Nothing is
-              transmitted until you submit, and your progress is held on this device while you
-              work.
-            </p>
-            <dl className="grid content-start gap-3 text-sm">
-              <div className="flex items-baseline justify-between gap-4 border-b border-border pb-2">
-                <dt className="label-meta text-muted-foreground">Credentials</dt>
-                <dd className="font-heading">Server-side only</dd>
-              </div>
-              <div className="flex items-baseline justify-between gap-4 border-b border-border pb-2">
-                <dt className="label-meta text-muted-foreground">Drafts</dt>
-                <dd className="font-heading">Kept 24 hours</dd>
-              </div>
-            </dl>
-          </div>
+          <p className="rise mt-9 max-w-xl border-t border-foreground/15 pt-7 text-[1.0625rem] leading-relaxed text-pretty text-muted-foreground">
+            Choose an entry below to send information securely to {masjidName}. Nothing is
+            transmitted until you submit.
+          </p>
         </div>
       </section>
 

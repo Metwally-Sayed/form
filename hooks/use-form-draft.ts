@@ -45,7 +45,7 @@ export function useFormDraft({
     try {
       removeDraft(window.localStorage, formId, versionId)
     } catch {
-      setStorageWarning("Draft storage is unavailable in this browser.")
+      setStorageWarning("Your answers cannot be kept as you go. You can still submit the form.")
     }
     setLastSavedAt(null)
   }, [formId, versionId])
@@ -66,7 +66,7 @@ export function useFormDraft({
     } catch {
       window.queueMicrotask(() => {
         setStorageWarning(
-          "Drafts cannot be saved in this browser. You can still submit the form."
+          "Your answers cannot be kept as you go. You can still submit the form."
         )
       })
     } finally {
@@ -92,7 +92,7 @@ export function useFormDraft({
           setStorageWarning(null)
         } catch {
           setStorageWarning(
-            "Your latest changes could not be saved locally. The form will still work."
+            "Your latest changes could not be kept. The form will still work."
           )
         }
       }, 450)
@@ -139,7 +139,7 @@ export function useFormDraft({
         status
       )
     } catch {
-      setStorageWarning("Draft storage is unavailable in this browser.")
+      setStorageWarning("Your answers cannot be kept as you go. You can still submit the form.")
     }
 
     setLastSavedAt(null)

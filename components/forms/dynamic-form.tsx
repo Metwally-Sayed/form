@@ -60,7 +60,7 @@ function clientError(error: unknown): PublicSubmissionError {
       return {
         code: "SUBMISSION_TIMEOUT",
         message:
-          "The request timed out, so we cannot confirm whether it was received. Your draft is still saved; review before trying again.",
+          "The request timed out, so we cannot confirm whether it was received. Review your answers before trying again.",
       }
     }
 
@@ -68,7 +68,7 @@ function clientError(error: unknown): PublicSubmissionError {
       return {
         code: "NETWORK_ERROR",
         message:
-          "The server could not be reached. Check your connection and try again; your draft is still saved.",
+          "The server could not be reached. Check your connection and try again.",
       }
     }
 
@@ -78,7 +78,7 @@ function clientError(error: unknown): PublicSubmissionError {
 
   return {
     code: "UNEXPECTED_ERROR",
-    message: "The submission could not be confirmed. Your saved draft has been kept.",
+    message: "The submission could not be confirmed. Please try again.",
   }
 }
 
@@ -140,10 +140,7 @@ export function DynamicForm({ formDefinition }: { formDefinition: FormDefinition
     versionId: formDefinition.version.id,
     defaultValues,
   })
-  const [submission, setSubmission] = React.useState<{
-    result: SubmissionResult
-    draftCleared: boolean
-  } | null>(null)
+  const [submission, setSubmission] = React.useState<SubmissionResult | null>(null)
   const [submissionError, setSubmissionError] = React.useState<PublicSubmissionError | null>(null)
   const [retryUntil, setRetryUntil] = React.useState<number | null>(null)
   const [now, setNow] = React.useState(() => Date.now())
@@ -185,7 +182,7 @@ export function DynamicForm({ formDefinition }: { formDefinition: FormDefinition
         throw new Error("Submission response was not an unambiguous success.")
       }
       form.reset(defaultValues)
-      setSubmission({ result, draftCleared })
+      setSubmission(result)
     } catch (error) {
       const normalized = clientError(error)
       setSubmissionError(normalized)
@@ -215,29 +212,16 @@ export function DynamicForm({ formDefinition }: { formDefinition: FormDefinition
           Received, <span className="text-primary italic">jazāk Allāhu khayran.</span>
         </h2>
         <p className="mt-4 max-w-md leading-relaxed text-muted-foreground">
-          {submission.draftCleared
-            ? "Your form was submitted successfully and the saved draft has been removed from this device."
-            : "Your form was submitted successfully, but this browser did not allow us to remove its local draft."}
+          Your form was submitted successfully. The masjid office will be in touch if anything
+          further is needed.
         </p>
 
         <dl className="mt-8 max-w-md border-t border-border pt-4">
           <div className="flex items-baseline justify-between gap-4 border-b border-border pb-3">
             <dt className="label-meta text-muted-foreground">Reference</dt>
-            <dd className="font-mono text-xs break-all">{submission.result.submissionId}</dd>
+            <dd className="font-mono text-xs break-all">{submission.submissionId}</dd>
           </div>
         </dl>
-
-        {!submission.draftCleared && (
-          <Alert variant="destructive" className="mt-6 max-w-md">
-            <AlertCircle aria-hidden="true" />
-            <AlertTitle className="font-heading text-base">
-              Clear this site&apos;s stored data
-            </AlertTitle>
-            <AlertDescription>
-              Use your browser&apos;s privacy settings to remove this site&apos;s local data before closing this device.
-            </AlertDescription>
-          </Alert>
-        )}
 
         <Button className="mt-9" nativeButton={false} render={<Link href="/" />}>
           Back to the register
@@ -252,19 +236,17 @@ export function DynamicForm({ formDefinition }: { formDefinition: FormDefinition
         {draft.notice === "restored" && (
           <Alert>
             <Save aria-hidden="true" />
-            <AlertTitle>Draft restored</AlertTitle>
-            <AlertDescription>
-              We restored the values previously saved in this browser.
-            </AlertDescription>
+            <AlertTitle>Answers restored</AlertTitle>
+            <AlertDescription>We restored the values you entered earlier.</AlertDescription>
           </Alert>
         )}
 
         {draft.notice === "external-update" && (
           <Alert>
             <AlertCircle aria-hidden="true" />
-            <AlertTitle>Draft changed in another tab</AlertTitle>
+            <AlertTitle>Changed in another tab</AlertTitle>
             <AlertDescription>
-              This tab was not overwritten. Reload only if you want to use the other tab&apos;s latest saved values.
+              This tab was not overwritten. Reload only if you want to use the other tab&apos;s latest values.
             </AlertDescription>
           </Alert>
         )}
@@ -272,7 +254,7 @@ export function DynamicForm({ formDefinition }: { formDefinition: FormDefinition
         {draft.storageWarning && (
           <Alert variant="destructive">
             <AlertCircle aria-hidden="true" />
-            <AlertTitle>Draft saving unavailable</AlertTitle>
+            <AlertTitle>Answers cannot be kept</AlertTitle>
             <AlertDescription>{draft.storageWarning}</AlertDescription>
           </Alert>
         )}
@@ -394,24 +376,13 @@ export function DynamicForm({ formDefinition }: { formDefinition: FormDefinition
         <div className="mt-12">
           <div className="flex flex-col-reverse gap-6 sm:flex-row sm:items-center sm:justify-end sm:gap-8">
             {draft.lastSavedAt && (
-              <div className="sm:mr-auto">
-                <p className="label-meta text-muted-foreground">
-                  Draft saved{" "}
-                  <span className="tabular-nums">
-                    {new Date(draft.lastSavedAt).toLocaleTimeString([], {
-                      hour: "numeric",
-                      minute: "2-digit",
-                    })}
-                  </span>
-                </p>
-                <button
-                  type="button"
-                  onClick={draft.discardDraft}
-                  className="mt-1.5 text-sm text-muted-foreground underline decoration-border underline-offset-4 transition-colors hover:text-destructive hover:decoration-destructive"
-                >
-                  Discard this draft
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={draft.discardDraft}
+                className="w-fit text-sm text-muted-foreground underline decoration-border underline-offset-4 transition-colors hover:text-destructive hover:decoration-destructive sm:mr-auto"
+              >
+                Clear all answers
+              </button>
             )}
 
             <Button
